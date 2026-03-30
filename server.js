@@ -9,6 +9,11 @@ dotenv.config();
 console.log("API KEY:", process.env.OPENAI_API_KEY ? "OK" : "MISSING");
 
 const app = express();
+
+// 🔥 IMPORTANTE para Railway
+app.set("trust proxy", 1);
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
@@ -23,7 +28,9 @@ if (process.env.OPENAI_API_KEY) {
   console.log("⚠️ OPENAI_API_KEY não encontrada");
 }
 
-// Rota principal de chat
+// =========================
+// 🚀 ROTA PRINCIPAL
+// =========================
 app.post("/chat", async (req, res) => {
   try {
     const { message } = req.body;
@@ -35,7 +42,7 @@ app.post("/chat", async (req, res) => {
       });
     }
 
-    // Segurança: garante que OpenAI existe
+    // Segurança
     if (!openai) {
       return res.status(500).json({
         error: "OpenAI não configurado"
@@ -61,7 +68,7 @@ app.post("/chat", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("ERRO:", error);
+    console.error("ERRO COMPLETO:", error);
 
     res.status(500).json({
       error: "Erro no servidor"
@@ -69,14 +76,20 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// Rota de teste (MUITO IMPORTANTE)
+// =========================
+// 🔥 ROTA ROOT (CRÍTICA)
+// =========================
 app.get("/", (req, res) => {
-  res.status(200).send("Ok");
+  res.setHeader("Content-Type", "text/plain");
+  res.status(200).send("OK");
 });
 
-// Porta dinâmica do Railway
+// =========================
+// 🚀 START SERVER
+// =========================
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+// 🔥 MUITO IMPORTANTE para Railway
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
