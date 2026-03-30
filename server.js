@@ -5,10 +5,14 @@ import OpenAI from "openai";
 
 dotenv.config();
 
+// DEBUG (importante)
+console.log("API KEY:", process.env.OPENAI_API_KEY ? "OK" : "MISSING");
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Inicialização segura do OpenAI
 let openai;
 
 if (process.env.OPENAI_API_KEY) {
@@ -19,9 +23,24 @@ if (process.env.OPENAI_API_KEY) {
   console.log("⚠️ OPENAI_API_KEY não encontrada");
 }
 
+// Rota principal de chat
 app.post("/chat", async (req, res) => {
   try {
     const { message } = req.body;
+
+    // Validação básica
+    if (!message) {
+      return res.status(400).json({
+        error: "Mensagem não enviada"
+      });
+    }
+
+    // Segurança: garante que OpenAI existe
+    if (!openai) {
+      return res.status(500).json({
+        error: "OpenAI não configurado"
+      });
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -30,7 +49,10 @@ app.post("/chat", async (req, res) => {
           role: "system",
           content: "Você é um professor de inglês focado em conversação."
         },
-        { role: "user", content: message }
+        {
+          role: "user",
+          content: message
+        }
       ]
     });
 
@@ -39,17 +61,22 @@ app.post("/chat", async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Erro no servidor");
+    console.error("ERRO:", error);
+
+    res.status(500).json({
+      error: "Erro no servidor"
+    });
   }
 });
 
+// Rota de teste (MUITO IMPORTANTE)
 app.get("/", (req, res) => {
   res.send("Career English Pro API is running 🚀");
 });
 
+// Porta dinâmica do Railway
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log("Servidor rodando na porta " + PORT);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
