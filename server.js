@@ -9,9 +9,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+let openai;
+
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  });
+} else {
+  console.log("⚠️ OPENAI_API_KEY não encontrada");
+}
 
 app.post("/chat", async (req, res) => {
   try {
@@ -38,11 +44,12 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("Career English Pro API is running 🚀");
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log("Servidor rodando na porta " + PORT);
-});
-app.get("/", (req, res) => {
-  res.send("Career English Pro API is running 🚀");
 });
