@@ -71,7 +71,7 @@ app.post("/chat", async (req, res) => {
 
 // Rota de teste (MUITO IMPORTANTE)
 app.get("/", (req, res) => {
-  res.status(200).send("OK");
+  res.status(200).send("Ok");
 });
 
 // Porta dinâmica do Railway
