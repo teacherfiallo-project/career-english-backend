@@ -71,7 +71,7 @@ app.post("/chat", async (req, res) => {
 
 // Rota de teste (MUITO IMPORTANTE)
 app.get("/", (req, res) => {
-  res.send("Career English Pro API is running 🚀");
+  res.status(200).send("OK");
 });
 
 // Porta dinâmica do Railway
